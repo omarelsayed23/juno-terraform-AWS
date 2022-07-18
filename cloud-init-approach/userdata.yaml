@@ -1,6 +1,7 @@
 #cloud-config
 packages:
  - httpd
+#These commands need to be adjsuted to run the juno node
 runcmd:
  - systemctl start httpd
  - sudo systemctl enable httpd 
