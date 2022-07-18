@@ -1,7 +1,11 @@
 #cloud-config
-packages:
- - httpd
-#These commands need to be adjsuted to run the juno node
 runcmd:
- - systemctl start httpd
- - sudo systemctl enable httpd 
+ - sudo yum install wget
+ - wget -O go_downloaded https://go.dev/dl/go1.18.4.linux-amd64.tar.gz
+ - sudo tar -C /usr/local -xzf go_downloaded
+ - echo \"export PATH=$PATH:/usr/local/go/bin\" >> ~/.bashrc
+ - bash
+ - sudo yum groupinstall Development Tools -y
+ - go install github.com/NethermindEth/juno/cmd/juno@latest
+ - go install github.com/NethermindEth/juno/cmd/juno-cli@latest
+ - juno
