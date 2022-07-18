@@ -10,7 +10,6 @@ terraform {
   required_providers {
     aws = {
       source = "hashicorp/aws"
-     
     }
   }
 
@@ -31,10 +30,11 @@ data "template_file" "user_data" {
 }
 
 resource "aws_instance" "web" {
-  ami           = "ami-087c17d1fe0178315"
+  ami           = "ami-098e42ae54c764c35"
   instance_type = "t2.micro"
   key_name = "${aws_key_pair.deployer.key_name}"
   user_data = data.template_file.user_data.rendered
+  vpc_security_group_ids = [aws_security_group.sg_web.id]
 
 
   tags = {
@@ -58,7 +58,6 @@ resource "aws_security_group" "sg_web" {
   name        = "sg_web"
   description = "Security Group"
   vpc_id      = data.aws_vpc.main.id
-  vpc_security_group_ids = [aws_security_group.sg_web.id]
 
   ingress = [
     {
