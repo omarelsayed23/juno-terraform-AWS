@@ -1,11 +1,33 @@
 #cloud-config
+shell: /bin/bash
+
+packages:
+ - gcc
+ - golang-go
+
+package_update: true
+
+write_files:
+- path: /etc/environment
+  append: true
+  content: |
+    GOPATH=$HOME/go
+- path: /etc/environment
+  append: true
+  content: |
+    GOROOT=/usr/lib/go
+- path: /etc/environment
+  append: true
+  content: |
+    PATH=$PATH:$GOROOT/bin:$GOPATH/bin:/usr/bin
+
+    
 runcmd:
- - sudo yum install wget
- - wget -O go_downloaded https://go.dev/dl/go1.18.4.linux-amd64.tar.gz
- - sudo tar -C /usr/local -xzf go_downloaded
- - echo \"export PATH=$PATH:/usr/local/go/bin\" >> ~/.bashrc
- - bash
- - sudo yum groupinstall Development Tools -y
+ - . /etc/environment
  - go install github.com/NethermindEth/juno/cmd/juno@latest
  - go install github.com/NethermindEth/juno/cmd/juno-cli@latest
- - juno
+ - ./home/ubuntu/go/bin/juno
+
+
+
+
