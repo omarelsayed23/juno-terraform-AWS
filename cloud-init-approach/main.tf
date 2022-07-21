@@ -27,10 +27,10 @@ resource "aws_key_pair" "deployer" {
 
 
 data "template_file" "user_data" {
-  template = "${file("./userdata8.yaml")}"
+  template = "${file("./userdata.yaml")}"
 }
 
-resource "aws_instance" "web2" {
+resource "aws_instance" "web" {
   
   ami           = var.ami_value
   instance_type = "t2.large"
@@ -49,7 +49,7 @@ resource "aws_instance" "web2" {
 
 output "public_ip" {  
   description = "Public IP address of the EC2 instance"
-  value = aws_instance.web2.public_ip
+  value = aws_instance.web.public_ip
 }
 
 data "aws_vpc" "main" {
