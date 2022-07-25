@@ -1,0 +1,63 @@
+
+#cloud-config
+shell: /bin/bash
+
+package_update: true
+
+packages:
+ - golang-go
+ - docker
+
+#cloud-config
+
+apt:
+ sources:
+  docker.list:
+   source: deb [arch=amd64] https://download.docker.com/linux/ubuntu $RELEASE stable
+   keyid: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+
+packages:
+ - golang-go
+ - docker-ce
+ - docker-ce-cli
+
+write_files:
+- path: /usr/tmp/juno.yaml
+  append: true
+  content: |
+logger:
+  verbosity_level: "debug"
+  enable_json_output: true
+ethereum:
+  node: "you_node_here"
+rpc:
+  enabled: false
+  port: 8080
+rest:
+  enabled: false
+  port: 8100
+  prefix: /feeder_gateway
+metrics:
+  enabled: true
+  port: 8100
+db_path: /var/lib/docker/volumes/juno_data
+starknet:
+  enabled: true
+  feeder_gateway: https://alpha-mainnet.starknet.io
+  api_sync: true
+  network: mainnet
+
+runcmd:
+ - sudo apt update
+ - sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
+ - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+ - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu  $(lsb_release -cs)  stable"
+ - sudo apt update
+ - sudo apt-get install docker-ce
+ - sudo systemctl start docker
+ - sudo systemctl enable docker
+ - sudo groupadd docker
+ - docker volume create juno_data
+ - sudo usermod -aG docker ubuntusudo docker pull public.ecr.aws/c7a0z0v9/juno_pub_image:latest
+ - sudo docker run -p 8080:8080 -v /var/lib/docker/volumes/juno_data:/home/app/.config/juno/data -v /usr/tmp/juno.yaml:/home/app/.config/juno/juno.yaml juno
+
