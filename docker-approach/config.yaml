@@ -55,5 +55,4 @@ runcmd:
  - sudo groupadd docker
  - docker volume create juno_data
  - sudo usermod -aG docker ubuntusudo docker pull public.ecr.aws/c7a0z0v9/juno_pub_image:latest
- - sudo docker run -p 8080:8080 -v /var/lib/docker/volumes/juno_data:/home/app/.config/juno/data -v /usr/tmp/juno.yaml:/home/app/.config/juno/juno.yaml public.ecr.aws/c7a0z0v9/juno_pub_image:latest 
-
+ - sudo docker run -p 8080:8080 -v /var/lib/docker/volumes/juno_data:/home/app/data -v /usr/tmp/juno.yaml:/home/app/juno.yaml public.ecr.aws/c7a0z0v9/juno_pub_image:latest
