@@ -1,0 +1,79 @@
+
+#cloud-config
+shell: /bin/bash
+
+package_update: true
+
+#cloud-config
+
+write_files:
+- path: /usr/tmp/juno.yaml
+  append: true
+  content: |
+    logger:
+      verbosity_level: "debug"
+      enable_json_output: true
+    ethereum:
+      node: "you_node_here"
+    rpc:
+      enabled: false
+      port: 8080
+    rest:
+      enabled: false
+      port: 8100
+      prefix: /feeder_gateway
+    metrics:
+      enabled: true
+      port: 8100
+    db_path: /var/lib/docker/volumes/juno_data
+    starknet:
+      enabled: true
+      feeder_gateway: https://alpha-mainnet.starknet.io
+      api_sync: true
+      network: mainnet
+
+- path: /usr/tmp/docker-compose.yml
+  append: true
+  content: |
+    version: "3.3"
+    services:
+      juno:
+        image: public.ecr.aws/c7a0z0v9/juno_pub_image:latest
+        ports:
+          - "8080:8080"
+        volumes:
+          - /var/lib/docker/volumes/juno_data:/home/app/data
+          - /usr/tmp/juno.yaml:/home/app/juno.yaml
+
+- path: /usr/tmp/juno-script.sh
+  append: true
+  content: |
+    #!/bin/bash
+    sudo apt update
+    sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
+    curl -fsSL https://get.docker.com | sh
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu  $(lsb_release -cs)  stable"
+    sudo apt update
+    sudo apt-get install docker-ce
+    sudo apt install docker-compose -y
+    sudo systemctl start docker
+    sudo systemctl enable docker
+    sudo groupadd docker
+    sudo docker-compose -f /usr/tmp/docker-compose.yml up
+- path: /etc/systemd/system/juno.service
+  append: true
+  content: |
+    [Unit]
+    Description=A service to run juno node
+
+    [Service]
+    User=root
+    ExecStart=/usr/tmp/juno-script.sh
+
+
+
+runcmd:
+ - sudo chmod +x /usr/tmp/juno-script.sh
+ - sudo systemctl start juno
+ - sudo cat /var/log/syslog
