@@ -1,9 +1,0 @@
-version: "3.3"
-services:
-  juno:
-    image: public.ecr.aws/c7a0z0v9/juno_pub_image:latest
-    ports:
-      - "8080:8080"
-    volumes:
-      - /var/lib/docker/volumes/juno_data:/home/app/data
-      - ./juno.yaml:/home/app/juno.yaml
