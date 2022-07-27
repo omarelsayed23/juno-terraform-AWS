@@ -1,0 +1,40 @@
+
+#cloud-config
+shell: /bin/bash
+
+package_update: true
+
+#cloud-config
+
+packages:
+ - golang-go
+
+
+write_files:
+- path: /usr/tmp/juno-script.sh
+  append: true
+  content: |
+    #!/bin/bash
+    export HOME=/home/ubuntu
+    export GOPATH=$HOME/go
+    export GOCACHE=$HOME/.cache/go-build
+    go install github.com/NethermindEth/juno/cmd/juno@latest
+    go install github.com/NethermindEth/juno/cmd/juno-cli@latest 
+    /home/ubuntu/go/bin/juno
+
+- path: /etc/systemd/system/juno.service
+  append: true
+  content: |
+    [Unit]
+    Description=A service to run juno node
+
+    [Service]
+    User=root
+    ExecStart=/usr/tmp/juno-script.sh
+
+
+
+runcmd:
+ - sudo chmod +x /usr/tmp/juno-script.sh
+ - sudo systemctl start juno
+ - sudo cat /var/log/syslog
