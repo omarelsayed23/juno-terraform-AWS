@@ -4,14 +4,10 @@ shell: /bin/bash
 
 package_update: true
 
-packages:
- - golang-go
- - docker
 
 #cloud-config
 
 packages:
- - golang-go
  - docker-ce
  - docker-ce-cli
 
